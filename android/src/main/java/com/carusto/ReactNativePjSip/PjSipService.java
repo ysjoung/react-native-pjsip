@@ -116,6 +116,12 @@ public class PjSipService extends Service {
                 .build();
 
         startForeground(1337, notification);
+
+        PowerManager.WakeLock wl = mPowerManager.newWakeLock(
+                PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                "service_started"
+        );
+        wl.acquire();
     }
 
     @Override
