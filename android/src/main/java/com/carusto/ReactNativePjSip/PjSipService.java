@@ -1,5 +1,6 @@
 package com.carusto.ReactNativePjSip;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.Process;
+import android.support.v4.app.NotificationCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -108,7 +110,7 @@ public class PjSipService extends Service {
         super.onCreate();
 
         Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_notif)
+                .setSmallIcon(R.mipmap.ic_notif)
                 .setContentTitle("Reachify")
                 .setContentText("Online")
                 .build();
@@ -903,7 +905,7 @@ public class PjSipService extends Service {
          String cls = ns + ".MainActivity";
 
          Intent intent = new Intent(getApplicationContext(), Class.forName(cls));
-         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.EXTRA_DOCK_STATE_CAR);
+         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
          intent.addCategory(Intent.CATEGORY_LAUNCHER);
          intent.putExtra("foreground", true);
 
