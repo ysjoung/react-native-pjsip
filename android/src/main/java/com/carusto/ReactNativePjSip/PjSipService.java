@@ -110,7 +110,7 @@ public class PjSipService extends Service {
         super.onCreate();
 
         Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.mipmap.ic_notif)
+                .setSmallIcon(R.drawable.ic_notif)
                 .setContentTitle("Reachify")
                 .setContentText("Online")
                 .build();
