@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -15,6 +16,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.Process;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -102,6 +104,8 @@ public class PjSipService extends Service {
 
     private BroadcastReceiver mPhoneStateChangedReceiver = new PhoneStateChangedReceiver();
 
+    private SharedPreferences mSharedPreferences;
+
     public PjSipBroadcastEmiter getEmitter() {
         return mEmitter;
     }
@@ -116,6 +120,10 @@ public class PjSipService extends Service {
                 .build();
 
         startForeground(1337, notification);
+    }
+
+    public void onTaskRemoved(Intent rootIntent) {
+        mSharedPreferences.edit().putBoolean("isAppForeground", false).commit();
     }
 
     @Override
@@ -242,6 +250,7 @@ public class PjSipService extends Service {
             registerReceiver(mPhoneStateChangedReceiver, phoneStateFilter);
 
             mInitialized = true;
+            mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
             job(new Runnable() {
                 @Override
@@ -903,7 +912,7 @@ public class PjSipService extends Service {
             return;
         }
 
-        boolean mAppHidden = true;
+        boolean mAppHidden = !mSharedPreferences.getBoolean("isAppForeground", false);
          // Automatically start application when incoming call received.
          if (mAppHidden) {
          try {
