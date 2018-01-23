@@ -57,6 +57,8 @@ public class PjSipService extends Service {
 
     private static String TAG = "PjSipService";
 
+    public static final String STARTED_FROM_SERVICE = "started_from_service";
+
     private boolean mInitialized;
 
     private HandlerThread mWorkerThread;
@@ -922,7 +924,7 @@ public class PjSipService extends Service {
          Intent intent = new Intent(getApplicationContext(), Class.forName(cls));
          intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
          intent.addCategory(Intent.CATEGORY_LAUNCHER);
-         intent.putExtra("foreground", true);
+         intent.putExtra(STARTED_FROM_SERVICE, true);
 
          startActivity(intent);
          } catch (Exception e) {
