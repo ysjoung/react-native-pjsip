@@ -215,10 +215,10 @@ public class PjSipService extends Service {
                 mTrash.add(transportConfig);
             }
             {
-                TransportConfig transportConfig = new TransportConfig();
-                transportConfig.setQosType(pj_qos_type.PJ_QOS_TYPE_VOICE);
-                mTlsTransportId = mEndpoint.transportCreate(pjsip_transport_type_e.PJSIP_TRANSPORT_TLS, transportConfig);
-                mTrash.add(transportConfig);
+//                TransportConfig transportConfig = new TransportConfig();
+//                transportConfig.setQosType(pj_qos_type.PJ_QOS_TYPE_VOICE);
+//                mTlsTransportId = mEndpoint.transportCreate(pjsip_transport_type_e.PJSIP_TRANSPORT_TLS, transportConfig);
+//                mTrash.add(transportConfig);
             }
 
             mEndpoint.libStart();
