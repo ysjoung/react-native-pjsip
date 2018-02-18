@@ -191,6 +191,10 @@ public class PjSipService extends Service {
                 epConfig.getUaConfig().setUserAgent("React Native PjSip (" + mEndpoint.libVersion().getFull() + ")");
             }
 
+            if (mServiceConfiguration.isStunServersNotEmpty()) {
+                epConfig.getUaConfig().setStunServer(mServiceConfiguration.getStunServers());
+            }
+
             epConfig.getMedConfig().setHasIoqueue(true);
             epConfig.getMedConfig().setClockRate(8000);
             epConfig.getMedConfig().setQuality(4);
@@ -898,7 +902,7 @@ public class PjSipService extends Service {
     private void handleChangeCodecSettings(Intent intent) {
         try {
             Bundle codecSettings = intent.getExtras();
-            
+
             // -----
             if (codecSettings != null) {
                 for (String key : codecSettings.keySet()) {
