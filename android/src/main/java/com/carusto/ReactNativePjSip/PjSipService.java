@@ -122,13 +122,13 @@ public class PjSipService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        Notification notification = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_notif)
-                .setContentTitle("Reachify")
-                .setContentText("Online")
-                .build();
+        // Notification notification = new NotificationCompat.Builder(this)
+        //         .setSmallIcon(R.drawable.ic_notif)
+        //         .setContentTitle("Reachify")
+        //         .setContentText("Online")
+        //         .build();
 
-        startForeground(1337, notification);
+        // startForeground(1337, notification);
     }
 
     public void onTaskRemoved(Intent rootIntent) {
@@ -265,11 +265,11 @@ public class PjSipService extends Service {
                 }
             });
 
-            PowerManager.WakeLock wl = mPowerManager.newWakeLock(
-                    PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP,
-                    "service_started"
-            );
-            wl.acquire();
+            // PowerManager.WakeLock wl = mPowerManager.newWakeLock(
+            //         PowerManager.FULL_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP,
+            //         "service_started"
+            // );
+            // wl.acquire();
         }
 
         if (intent != null) {
