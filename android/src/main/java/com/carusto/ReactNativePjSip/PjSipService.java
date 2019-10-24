@@ -298,6 +298,8 @@ public class PjSipService extends Service {
             Log.w(TAG, "Failed to destroy PjSip library", e);
         }
 
+        unregisterReceiver(mPhoneStateChangedReceiver);
+
         super.onDestroy();
     }
 
@@ -703,9 +705,8 @@ public class PjSipService extends Service {
     private void handleCallHangup(Intent intent) {
         try {
             int callId = intent.getIntExtra("call_id", -1);
-//            PjSipCall call = findCall(callId);
-//            call.hangup(new CallOpParam(true));
-            mEndpoint.hangupAllCalls();
+            PjSipCall call = findCall(callId);
+            call.hangup(new CallOpParam(true));
 
             mEmitter.fireIntentHandled(intent);
         } catch (Exception e) {
