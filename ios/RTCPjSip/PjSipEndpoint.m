@@ -210,6 +210,17 @@
     return self.accounts[@(accountId)];
 }
 
+- (NSMutableArray *)getAccounts {
+    NSMutableArray *accountsResult = [[NSMutableArray alloc] initWithCapacity:[@([self.accounts count]) unsignedIntegerValue]];
+
+    for (NSString *key in self.accounts) {
+        PjSipAccount *acc = self.accounts[key];
+        [accountsResult addObject:[acc toJsonDictionary]];
+    }
+    
+    return accountsResult;
+}
+
 
 #pragma mark Calls
 

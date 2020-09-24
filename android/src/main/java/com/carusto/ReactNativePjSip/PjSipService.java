@@ -179,8 +179,8 @@ public class PjSipService extends Service {
             // Configure endpoint
             EpConfig epConfig = new EpConfig();
 
-            epConfig.getLogConfig().setLevel(10);
-            epConfig.getLogConfig().setConsoleLevel(10);
+            epConfig.getLogConfig().setLevel(1);
+            epConfig.getLogConfig().setConsoleLevel(1);
 
             mLogWriter = new PjSipLogWriter();
             epConfig.getLogConfig().setWriter(mLogWriter);
@@ -234,6 +234,8 @@ public class PjSipService extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, int flags, int startId) {
+        try {
+
         if (!mInitialized) {
             if (intent != null && intent.hasExtra("service")) {
                 mServiceConfiguration = ServiceConfigurationDTO.fromMap((Map) intent.getSerializableExtra("service"));
@@ -282,10 +284,19 @@ public class PjSipService extends Service {
         }
 
         return START_NOT_STICKY;
+        } catch (Exception e) {
+            Log.e(TAG, "Error in onStart", e);
+            return 0;
+        }
     }
 
     @Override
     public void onDestroy() {
+        // Kill all active accounts
+        for (PjSipAccount a : mAccounts) {
+            evict(a);
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             mWorkerThread.quitSafely();
         }
@@ -293,12 +304,15 @@ public class PjSipService extends Service {
         try {
             if (mEndpoint != null) {
                 mEndpoint.libDestroy();
+                mEndpoint.delete();
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed to destroy PjSip library", e);
         }
 
         unregisterReceiver(mPhoneStateChangedReceiver);
+
+        mInitialized = false;
 
         super.onDestroy();
     }
@@ -358,11 +372,13 @@ public class PjSipService extends Service {
             return;
         }
 
-        Log.d(TAG, "Handle \"" + intent.getAction() + "\" action (" + ArgumentUtils.dumpIntentExtraParameters(intent) + ")");
 
         switch (intent.getAction()) {
             // General actions
             case PjActions.ACTION_START:
+                handleStart(intent);
+                break;
+            case PjActions.ACTION_STOP:
                 handleStart(intent);
                 break;
 
@@ -376,6 +392,13 @@ public class PjSipService extends Service {
             case PjActions.ACTION_DELETE_ACCOUNT:
                 handleAccountDelete(intent);
                 break;
+            case PjActions.ACTION_GET_ACCOUNT:
+                handleGetAccount(intent);
+                break;
+            case PjActions.ACTION_GET_ACCOUNTS:
+                handleGetAccounts(intent);
+                break;
+
 
             // Call actions
             case PjActions.ACTION_MAKE_CALL:
@@ -461,6 +484,14 @@ public class PjSipService extends Service {
         }
     }
 
+    private void handleStop(Intent intent) {
+        try {
+            mEmitter.fireStopped(intent);
+        } catch (Exception e) {
+            mEmitter.fireIntentHandled(intent, e);
+        }
+    }
+
     private void handleSetServiceConfiguration(Intent intent) {
         try {
             updateServiceConfiguration(ServiceConfigurationDTO.fromIntent(intent));
@@ -509,6 +540,32 @@ public class PjSipService extends Service {
 
             // -----
             mEmitter.fireIntentHandled(intent);
+        } catch (Exception e) {
+            mEmitter.fireIntentHandled(intent, e);
+        }
+    }
+
+    private void handleGetAccount(Intent intent) {
+        try {
+            int accountId = intent.getIntExtra("account_id", -1);
+            PjSipAccount account = null;
+
+            for (PjSipAccount a : mAccounts) {
+                if (a.getId() == accountId) {
+                    account = a;
+                    break;
+                }
+            }
+
+            mEmitter.fireAccountRetrieved(intent, account);
+        } catch (Exception e) {
+            mEmitter.fireIntentHandled(intent, e);
+        }
+    }
+
+    private void handleGetAccounts(Intent intent) {
+        try {
+            mEmitter.fireAccountsRetrieved(intent, mAccounts);
         } catch (Exception e) {
             mEmitter.fireIntentHandled(intent, e);
         }
@@ -1122,7 +1179,6 @@ public class PjSipService extends Service {
             final String extraState = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
 
             if (TelephonyManager.EXTRA_STATE_RINGING.equals(extraState) || TelephonyManager.EXTRA_STATE_OFFHOOK.equals(extraState)) {
-                Log.d(TAG, "GSM call received, pause all SIP calls and do not accept incoming SIP calls.");
 
                 mGSMIdle = false;
 
@@ -1133,7 +1189,6 @@ public class PjSipService extends Service {
                     }
                 });
             } else if (TelephonyManager.EXTRA_STATE_IDLE.equals(extraState)) {
-                Log.d(TAG, "GSM call released, allow to accept incoming calls.");
                 mGSMIdle = true;
             }
         }
