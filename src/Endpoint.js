@@ -106,6 +106,15 @@ export default class Endpoint extends EventEmitter {
         });
     }
 
+    stop() {
+        return new Promise(function(resolve, reject) {
+            NativeModules.PjSipModule.stop((successful, data) => {
+                resolve({});
+            });
+            resolve();
+        });
+    }
+
     updateStunServers(accountId, stunServerList) {
         return new Promise(function(resolve, reject) {
             NativeModules.PjSipModule.updateStunServers(accountId, stunServerList, (successful, data) => {
@@ -219,6 +228,46 @@ export default class Endpoint extends EventEmitter {
             NativeModules.PjSipModule.deleteAccount(account.getId(), (successful, data) => {
                 if (successful) {
                     resolve(data);
+                } else {
+                    reject(data);
+                }
+            });
+        });
+    }
+
+    /**
+     * Gets list of all accounts
+     *
+     * @returns {Promise}
+     */
+    getAccounts() {
+        return new Promise(function(resolve, reject) {
+            NativeModules.PjSipModule.getAccounts((successful, data) => {
+                if (successful) {
+                    let accounts = [];
+
+                    for (let d of data) {
+                        accounts.push(new Account(d));
+                    }
+
+                    resolve(accounts);
+                } else {
+                    reject(data);
+                }
+            });
+        });
+    }
+
+    /**
+     * Gets an account by id
+     *
+     * @returns {Promise}
+     */
+    getAccount(accountId) {
+        return new Promise(function(resolve, reject) {
+            NativeModules.PjSipModule.getAccount(accountId, (successful, data) => {
+                if (successful) {
+                    resolve(new Account(data));
                 } else {
                     reject(data);
                 }

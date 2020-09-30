@@ -36,6 +36,11 @@ RCT_EXPORT_METHOD(start: (NSDictionary *) config callback: (RCTResponseSenderBlo
     callback(@[@TRUE, result]);
 }
 
+// Stub method
+RCT_EXPORT_METHOD(stop: callback: (RCTResponseSenderBlock) callback) {
+    callback(@[@TRUE]);
+}
+
 RCT_EXPORT_METHOD(updateStunServers: (int) accountId stunServerList:(NSArray *) stunServerList callback:(RCTResponseSenderBlock) callback) {
     [[PjSipEndpoint instance] updateStunServers:accountId stunServerList:stunServerList];
     callback(@[@TRUE]);
@@ -51,6 +56,16 @@ RCT_EXPORT_METHOD(createAccount: (NSDictionary *) config callback:(RCTResponseSe
 RCT_EXPORT_METHOD(deleteAccount: (int) accountId callback:(RCTResponseSenderBlock) callback) {
     [[PjSipEndpoint instance] deleteAccount:accountId];
     callback(@[@TRUE]);
+}
+
+RCT_EXPORT_METHOD(getAccount: (int) accountId callback:(RCTResponseSenderBlock) callback) {
+    PjSipAccount *account = [[PjSipEndpoint instance] findAccount:accountId];
+    callback(@[@TRUE], [account toJsonDictionary]);
+}
+
+RCT_EXPORT_METHOD(getAccounts: callback: (RCTResponseSenderBlock) callback) {
+    NSMutableArray *result = [[PjSipEndpoint instance] getAccounts];
+    callback(@[@TRUE, result]);
 }
 
 RCT_EXPORT_METHOD(registerAccount: (int) accountId renew:(BOOL) renew callback:(RCTResponseSenderBlock) callback) {
