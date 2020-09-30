@@ -47,7 +47,6 @@ public class PjSipCall extends Call {
     public void hold() throws Exception {
         CallInfo info = getInfo();
         boolean isIncoming = info.getStateText().equals("INCOMING");
-        Log.d(TAG, "Calling call.hold incoming:" + isIncoming + ", state: " + info.getStateText());
     
         if (isHeld || isIncoming) {
             return;
@@ -185,19 +184,16 @@ public class PjSipCall extends Call {
         for (int i = 0; i < info.getMedia().size(); i++) {
             Media media = getMedia(i);
             CallMediaInfo mediaInfo = info.getMedia().get(i);
-            Log.d(TAG, "onCallMediaState 1 type: " + mediaInfo.getType() + " status: " + mediaInfo.getStatus());
 
             if (mediaInfo.getType() == pjmedia_type.PJMEDIA_TYPE_AUDIO
                     && media != null
                     && mediaInfo.getStatus() == pjsua_call_media_status.PJSUA_CALL_MEDIA_ACTIVE) {
                 AudioMedia audioMedia = AudioMedia.typecastFromMedia(media);
-                Log.d(TAG, "onCallMediaState 2");
 
                 // connect the call audio media to sound device
                 try {
                     AudDevManager mgr = account.getService().getAudDevManager();
 
-                    Log.d(TAG, "onCallMediaState 3");
                     try {
                         audioMedia.adjustRxLevel((float) 1.5);
                         audioMedia.adjustTxLevel((float) 1.5);
@@ -205,9 +201,7 @@ public class PjSipCall extends Call {
                         Log.e(TAG, "An error while adjusting audio levels", exc);
                     }
 
-                    Log.d(TAG, "onCallMediaState 4" + mgr.getPlaybackDevMedia());
                     audioMedia.startTransmit(mgr.getPlaybackDevMedia());
-                    Log.d(TAG, "onCallMediaState 5");
                     mgr.getCaptureDevMedia().startTransmit(audioMedia);
                 } catch (Exception exc) {
                     Log.e(TAG, "An error occurs while connecting audio media to sound device", exc);

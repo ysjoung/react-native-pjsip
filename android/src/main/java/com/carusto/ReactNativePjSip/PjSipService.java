@@ -790,20 +790,14 @@ public class PjSipService extends Service {
 
     private void handleCallAnswer(Intent intent) {
         try {
-            Log.d(TAG, "HANDLE CALL ANSWER 1");
             int callId = intent.getIntExtra("call_id", -1);
 
             // -----
-            Log.d(TAG, "HANDLE CALL ANSWER 2");
             PjSipCall call = findCall(callId);
-            Log.d(TAG, "HANDLE CALL ANSWER 3" + call.toJson());
             CallOpParam prm = new CallOpParam();
-            Log.d(TAG, "HANDLE CALL ANSWER 4");
             prm.setStatusCode(pjsip_status_code.PJSIP_SC_OK);
-            Log.d(TAG, "HANDLE CALL ANSWER 5" + callId);
             call.answer(prm);
 
-            Log.d(TAG, "HANDLE CALL ANSWER 6");
             // Automatically put other calls on hold.
             doPauseParallelCalls(call);
 
@@ -1154,7 +1148,6 @@ public class PjSipService extends Service {
      */
     private void doPauseParallelCalls(PjSipCall activeCall) {
         for (PjSipCall call : mCalls) {
-            Log.d(TAG, "Putting call on hold doPauseParalellelCalls");
             if (activeCall.getId() == call.getId()) {
                 continue;
             }
@@ -1173,7 +1166,6 @@ public class PjSipService extends Service {
     private void doPauseAllCalls() {
         for (PjSipCall call : mCalls) {
             try {
-                Log.d(TAG, "Putting call on hold doPauseAllCalls" + call.toJson());
                 call.hold();
             } catch (Exception e) {
                 Log.w(TAG, "Failed to put call on hold", e);
