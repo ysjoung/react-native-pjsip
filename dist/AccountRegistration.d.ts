@@ -3,12 +3,16 @@
  * by calling account.getRegistration().
  */
 export default class AccountRegistration {
-    constructor({ status, statusText, active, reason }) {
-        this._status = status;
-        this._statusText = statusText;
-        this._active = active;
-        this._reason = reason;
-    }
+    _status: string;
+    _statusText: string;
+    _active: boolean;
+    _reason: string;
+    constructor({ status, statusText, active, reason }: {
+        status: any;
+        statusText: any;
+        active: any;
+        reason: any;
+    });
     /**
      * Last registration status code (SIP status codes according to RFC 3261).
      * If status code is empty, the account is currently not registered. Any other value indicates the SIP
@@ -16,41 +20,30 @@ export default class AccountRegistration {
      *
      * @returns {string|null}
      */
-    getStatus() {
-        return this._status;
-    }
+    getStatus(): string;
     /**
      * String describing the registration status.
      *
      * @returns {string|null}
      */
-    getStatusText() {
-        return this._statusText;
-    }
+    getStatusText(): string;
     /**
      * Flag to tell whether this account is currently registered
      * (has active registration session).
      *
      * @returns boolean
      */
-    isActive() {
-        return this._active;
-    }
+    isActive(): boolean;
     /**
      * Reason phrase received.
      *
      * @returns {String|null}
      */
-    getReason() {
-        return this._reason;
-    }
-    toJson() {
-        return {
-            status: this._status,
-            statusText: this._statusText,
-            active: this._active,
-            reason: this._reason
-        };
-    }
+    getReason(): string;
+    toJson(): {
+        status: string;
+        statusText: string;
+        active: boolean;
+        reason: string;
+    };
 }
-//# sourceMappingURL=AccountRegistration.js.map

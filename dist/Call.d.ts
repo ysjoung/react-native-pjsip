@@ -1,18 +1,16 @@
-export enum CallState {
-    PJSIP_INV_STATE_NULL = 'PJSIP_INV_STATE_NULL',
-    PJSIP_INV_STATE_CALLING = 'PJSIP_INV_STATE_CALLING',
-    PJSIP_INV_STATE_INCOMING = 'PJSIP_INV_STATE_INCOMING',
-    PJSIP_INV_STATE_EARLY = 'PJSIP_INV_STATE_EARLY',
-    PJSIP_INV_STATE_CONNECTING = 'PJSIP_INV_STATE_CONNECTING',
-    PJSIP_INV_STATE_CONFIRMED = 'PJSIP_INV_STATE_CONFIRMED',
-    PJSIP_INV_STATE_DISCONNECTED = 'PJSIP_INV_STATE_DISCONNECTED',
-};
-
+export declare enum CallState {
+    PJSIP_INV_STATE_NULL = "PJSIP_INV_STATE_NULL",
+    PJSIP_INV_STATE_CALLING = "PJSIP_INV_STATE_CALLING",
+    PJSIP_INV_STATE_INCOMING = "PJSIP_INV_STATE_INCOMING",
+    PJSIP_INV_STATE_EARLY = "PJSIP_INV_STATE_EARLY",
+    PJSIP_INV_STATE_CONNECTING = "PJSIP_INV_STATE_CONNECTING",
+    PJSIP_INV_STATE_CONFIRMED = "PJSIP_INV_STATE_CONFIRMED",
+    PJSIP_INV_STATE_DISCONNECTED = "PJSIP_INV_STATE_DISCONNECTED"
+}
 /**
  * This class describes the information and current status of a call.
  */
-class Call {
-
+declare class Call {
     _id: number;
     _callId: string;
     _accountId: number;
@@ -39,106 +37,47 @@ class Call {
     _media: string;
     _provisionalMedia: string;
     _constructionTime: number;
-
-    constructor({
-            id,
-            callId,
-            accountId,
-            localContact,
-            localUri,
-            remoteContact,
-            remoteUri,
-            state,
-            stateText,
-            held,
-            muted,
-            speaker,
-            connectDuration,
-            totalDuration,
-            remoteOfferer,
-            remoteAudioCount,
-            remoteVideoCount,
-            audioCount,
-            videoCount,
-            lastStatusCode,
-            lastReason,
-            media,
-            provisionalMedia,
-        }) {
-        let remoteNumber = null;
-        let remoteName = null;
-
-        if (remoteUri) {
-            let match = remoteUri.match(/"([^"]+)" <sip:([^@]+)@/);
-
-            if (match) {
-                remoteName = match[1];
-                remoteNumber = match[2];
-            } else {
-                match = remoteUri.match(/sip:([^@]+)@/);
-
-                if (match) {
-                    remoteNumber = match[1];
-                }
-            }
-        }
-
-        this._id = id;
-        this._callId = callId;
-        this._accountId = accountId;
-        this._localContact = localContact;
-        this._localUri = localUri;
-        this._remoteContact = remoteContact;
-        this._remoteUri = remoteUri;
-        this._state = state;
-        this._stateText = stateText;
-        this._held = held;
-        this._muted = muted;
-        this._speaker = speaker;
-        this._connectDuration = connectDuration;
-        this._totalDuration = totalDuration;
-        this._remoteOfferer = remoteOfferer;
-        this._remoteAudioCount = remoteAudioCount;
-        this._remoteVideoCount = remoteVideoCount;
-        this._remoteNumber = remoteNumber;
-        this._remoteName = remoteName;
-        this._audioCount = audioCount;
-        this._videoCount = videoCount;
-        this._lastStatusCode = lastStatusCode;
-        this._lastReason = lastReason;
-
-        this._media = media;
-        this._provisionalMedia = provisionalMedia;
-
-        this._constructionTime = Math.round(new Date().getTime() / 1000);
-    }
-
+    constructor({ id, callId, accountId, localContact, localUri, remoteContact, remoteUri, state, stateText, held, muted, speaker, connectDuration, totalDuration, remoteOfferer, remoteAudioCount, remoteVideoCount, audioCount, videoCount, lastStatusCode, lastReason, media, provisionalMedia, }: {
+        id: any;
+        callId: any;
+        accountId: any;
+        localContact: any;
+        localUri: any;
+        remoteContact: any;
+        remoteUri: any;
+        state: any;
+        stateText: any;
+        held: any;
+        muted: any;
+        speaker: any;
+        connectDuration: any;
+        totalDuration: any;
+        remoteOfferer: any;
+        remoteAudioCount: any;
+        remoteVideoCount: any;
+        audioCount: any;
+        videoCount: any;
+        lastStatusCode: any;
+        lastReason: any;
+        media: any;
+        provisionalMedia: any;
+    });
     /**
      * Call identification.
      * @returns {int}
      */
-    getId(): number {
-        return this._id;
-    }
-
+    getId(): number;
     /**
      * The account ID where this call belongs.
      * @returns {int}
      */
-    getAccountId(): number {
-        return this._accountId;
-    }
-
+    getAccountId(): number;
     /**
      * Dialog Call-ID string.
      *
      * @returns {String}
      */
-    getCallId(): string {
-        return this._callId;
-    }
-
-
+    getCallId(): string;
     /**
      * Up-to-date call duration in seconds.
      * Use local time to calculate actual call duration.
@@ -146,114 +85,65 @@ class Call {
      * @public
      * @returns {int}
      */
-    getTotalDuration(): number {
-        let time = Math.round(new Date().getTime() / 1000);
-        let offset = time - this._constructionTime;
-
-        return this._totalDuration + offset;
-    };
-
+    getTotalDuration(): number;
     /**
      * Up-to-date call connected duration (zero when call is not established)
      *
      * @returns {int}
      */
-    getConnectDuration(): number {
-        if (this._connectDuration < 0 || this._state == "PJSIP_INV_STATE_DISCONNECTED") {
-            return this._connectDuration;
-        }
-
-        let time = Math.round(new Date().getTime() / 1000);
-        let offset = time - this._constructionTime;
-
-        return this._connectDuration + offset;
-    }
-
+    getConnectDuration(): number;
     /**
      * Call duration in "MM:SS" format.
      *
      * @public
      * @returns {string}
      */
-    getFormattedTotalDuration(): string {
-        return this._formatTime(this.getTotalDuration());
-    };
-
+    getFormattedTotalDuration(): string;
     /**
      * Call duration in "MM:SS" format.
      *
      * @public
      * @returns {string}
      */
-    getFormattedConnectDuration(): string {
-        return this._formatTime(this.getConnectDuration());
-    };
-
+    getFormattedConnectDuration(): string;
     /**
      * Local Contact.
      * TODO: Provide example
      * @returns {String}
      */
-    getLocalContact(): string {
-        return this._localContact;
-    }
-
+    getLocalContact(): string;
     /**
      * Local URI.
      * TODO: Provide example
      * @returns {String}
      */
-    getLocalUri(): string {
-        return this._localUri;
-    }
-
+    getLocalUri(): string;
     /**
      * Remote contact.
      * TODO: Provide example
      * @returns {String}
      */
-    getRemoteContact(): string {
-        return this._remoteContact;
-    }
-
+    getRemoteContact(): string;
     /**
      * Remote URI.
      * TODO: Provide example
      * @returns {String}
      */
-    getRemoteUri(): string {
-        return this._remoteUri;
-    }
-
+    getRemoteUri(): string;
     /**
      * Callee name. Could be null if no name specified in URI.
      * @returns {String}
      */
-    getRemoteName(): string {
-        return this._remoteName;
-    }
-
+    getRemoteName(): string;
     /**
      * Callee number
      * @returns {String}
      */
-    getRemoteNumber(): string {
-        return this._remoteNumber;
-    }
-
+    getRemoteNumber(): string;
     /**
      * @returns {String}
      */
-    getRemoteFormattedNumber(): string {
-        if (this._remoteName && this._remoteNumber) {
-            return `${this._remoteName} <${this._remoteNumber}>`;
-        } else if (this._remoteNumber) {
-            return this._remoteNumber;
-        } else {
-            return this._remoteUri
-        }
-    }
-
+    getRemoteFormattedNumber(): string;
     /**
      * Invite session state.
      *
@@ -267,76 +157,42 @@ class Call {
      *
      * @returns {String}
      */
-    getState(): CallState {
-        return this._state;
-    }
-
+    getState(): CallState;
     /**
      * Text describing the state.
      *
      * @returns {String}
      */
-    getStateText(): string {
-        return this._stateText;
-    }
-
-    isHeld(): boolean {
-        return this._held;
-    }
-
-    isMuted(): boolean {
-        return this._muted;
-    }
-
-    isSpeaker(): boolean {
-        return this._speaker;
-    }
-
-    isTerminated(): boolean {
-        return this._state === 'PJSIP_INV_STATE_DISCONNECTED';
-    }
-
+    getStateText(): string;
+    isHeld(): boolean;
+    isMuted(): boolean;
+    isSpeaker(): boolean;
+    isTerminated(): boolean;
     /**
      * Flag if remote was SDP offerer
      * @returns {boolean}
      */
-    getRemoteOfferer(): number {
-        // TODO Verify whether boolean value
-        return this._remoteOfferer;
-    }
-
+    getRemoteOfferer(): number;
     /**
      * Number of audio streams offered by remote.
      * @returns {int}
      */
-    getRemoteAudioCount(): number {
-        return this._remoteAudioCount;
-    }
-
+    getRemoteAudioCount(): number;
     /**
      * Number of video streams offered by remote.
      * @returns {int}
      */
-    getRemoteVideoCount(): number {
-        return this._remoteVideoCount;
-    }
-
+    getRemoteVideoCount(): number;
     /**
      * Number of simultaneous active audio streams for this call. If zero - audio is disabled in this call.
      * @returns {int}
      */
-    getAudioCount(): number {
-        return this._audioCount;
-    }
-
+    getAudioCount(): number;
     /**
      * Number of simultaneous active video streams for this call. If zero - video is disabled in this call.
      * @returns {*}
      */
-    getVideoCount(): number {
-        return this._videoCount;
-    }
-
+    getVideoCount(): number;
     /**
      * Last status code heard, which can be used as cause code.
      * Possible values:
@@ -400,51 +256,22 @@ class Call {
      *
      * @returns {string}
      */
-    getLastStatusCode(): string {
-        return this._lastStatusCode;
-    }
-
+    getLastStatusCode(): string;
     /**
      * The reason phrase describing the last status.
      *
      * @returns {string}
      */
-    getLastReason(): string {
-        return this._lastReason;
-    }
-
-    getMedia(): string {
-        return this._media;
-    }
-
-    getProvisionalMedia(): string {
-        return this._provisionalMedia;
-    }
-
+    getLastReason(): string;
+    getMedia(): string;
+    getProvisionalMedia(): string;
     /**
      * Format seconds to "MM:SS" format.
      *
      * @public
      * @returns {string}
      */
-    _formatTime(seconds: number): string {
-        if (isNaN(seconds) || seconds < 0) {
-            return "00:00";
-        }
-        var hours = parseInt(String(seconds/3600)) % 24;
-        var minutes = parseInt(String(seconds/60)) % 60;
-        var result = "";
-        seconds = seconds % 60;
-
-        if (hours > 0) {
-            result += (hours < 10 ? "0" + hours : hours) + ":";
-        }
-
-        result += (minutes < 10 ? "0" + minutes : minutes) + ":" + (seconds  < 10 ? "0" + seconds : seconds);
-        return result;
-    };
+    _formatTime(seconds: number): string;
 }
-
 export { Call };
-
 export default Call;
