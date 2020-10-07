@@ -1,15 +1,69 @@
+export enum CallState {
+    PJSIP_INV_STATE_NULL = 'PJSIP_INV_STATE_NULL',
+    PJSIP_INV_STATE_CALLING = 'PJSIP_INV_STATE_CALLING',
+    PJSIP_INV_STATE_INCOMING = 'PJSIP_INV_STATE_INCOMING',
+    PJSIP_INV_STATE_EARLY = 'PJSIP_INV_STATE_EARLY',
+    PJSIP_INV_STATE_CONNECTING = 'PJSIP_INV_STATE_CONNECTING',
+    PJSIP_INV_STATE_CONFIRMED = 'PJSIP_INV_STATE_CONFIRMED',
+    PJSIP_INV_STATE_DISCONNECTED = 'PJSIP_INV_STATE_DISCONNECTED',
+};
+
 /**
  * This class describes the information and current status of a call.
  */
 export default class Call {
 
+    _id: number;
+    _callId: string;
+    _accountId: number;
+    _localContact: string;
+    _localUri: string;
+    _remoteContact: string;
+    _remoteUri: string;
+    _state: CallState;
+    _stateText: string;
+    _held: boolean;
+    _muted: boolean;
+    _speaker: boolean;
+    _connectDuration: number;
+    _totalDuration: number;
+    _remoteOfferer: number;
+    _remoteAudioCount: number;
+    _remoteVideoCount: number;
+    _remoteNumber: string;
+    _remoteName: string;
+    _audioCount: number;
+    _videoCount: number;
+    _lastStatusCode: string;
+    _lastReason: string;
+    _media: string;
+    _provisionalMedia: string;
+    _constructionTime: number;
+
     constructor({
-            id, callId, accountId,
-            localContact, localUri, remoteContact, remoteUri,
-            state, stateText, held, muted, speaker,
-            connectDuration, totalDuration,
-            remoteOfferer, remoteAudioCount, remoteVideoCount, audioCount, videoCount,
-            lastStatusCode, lastReason, media, provisionalMedia
+            id,
+            callId,
+            accountId,
+            localContact,
+            localUri,
+            remoteContact,
+            remoteUri,
+            state,
+            stateText,
+            held,
+            muted,
+            speaker,
+            connectDuration,
+            totalDuration,
+            remoteOfferer,
+            remoteAudioCount,
+            remoteVideoCount,
+            audioCount,
+            videoCount,
+            lastStatusCode,
+            lastReason,
+            media,
+            provisionalMedia,
         }) {
         let remoteNumber = null;
         let remoteName = null;
@@ -63,7 +117,7 @@ export default class Call {
      * Call identification.
      * @returns {int}
      */
-    getId() {
+    getId(): number {
         return this._id;
     }
 
@@ -71,7 +125,7 @@ export default class Call {
      * The account ID where this call belongs.
      * @returns {int}
      */
-    getAccountId() {
+    getAccountId(): number {
         return this._accountId;
     }
 
@@ -80,7 +134,7 @@ export default class Call {
      *
      * @returns {String}
      */
-    getCallId() {
+    getCallId(): string {
         return this._callId;
     }
 
@@ -92,7 +146,7 @@ export default class Call {
      * @public
      * @returns {int}
      */
-    getTotalDuration() {
+    getTotalDuration(): number {
         let time = Math.round(new Date().getTime() / 1000);
         let offset = time - this._constructionTime;
 
@@ -104,7 +158,7 @@ export default class Call {
      *
      * @returns {int}
      */
-    getConnectDuration() {
+    getConnectDuration(): number {
         if (this._connectDuration < 0 || this._state == "PJSIP_INV_STATE_DISCONNECTED") {
             return this._connectDuration;
         }
@@ -121,7 +175,7 @@ export default class Call {
      * @public
      * @returns {string}
      */
-    getFormattedTotalDuration() {
+    getFormattedTotalDuration(): string {
         return this._formatTime(this.getTotalDuration());
     };
 
@@ -131,7 +185,7 @@ export default class Call {
      * @public
      * @returns {string}
      */
-    getFormattedConnectDuration() {
+    getFormattedConnectDuration(): string {
         return this._formatTime(this.getConnectDuration());
     };
 
@@ -140,7 +194,7 @@ export default class Call {
      * TODO: Provide example
      * @returns {String}
      */
-    getLocalContact() {
+    getLocalContact(): string {
         return this._localContact;
     }
 
@@ -149,7 +203,7 @@ export default class Call {
      * TODO: Provide example
      * @returns {String}
      */
-    getLocalUri() {
+    getLocalUri(): string {
         return this._localUri;
     }
 
@@ -158,7 +212,7 @@ export default class Call {
      * TODO: Provide example
      * @returns {String}
      */
-    getRemoteContact() {
+    getRemoteContact(): string {
         return this._remoteContact;
     }
 
@@ -167,7 +221,7 @@ export default class Call {
      * TODO: Provide example
      * @returns {String}
      */
-    getRemoteUri() {
+    getRemoteUri(): string {
         return this._remoteUri;
     }
 
@@ -175,7 +229,7 @@ export default class Call {
      * Callee name. Could be null if no name specified in URI.
      * @returns {String}
      */
-    getRemoteName() {
+    getRemoteName(): string {
         return this._remoteName;
     }
 
@@ -183,14 +237,14 @@ export default class Call {
      * Callee number
      * @returns {String}
      */
-    getRemoteNumber() {
+    getRemoteNumber(): string {
         return this._remoteNumber;
     }
 
     /**
      * @returns {String}
      */
-    getRemoteFormattedNumber() {
+    getRemoteFormattedNumber(): string {
         if (this._remoteName && this._remoteNumber) {
             return `${this._remoteName} <${this._remoteNumber}>`;
         } else if (this._remoteNumber) {
@@ -213,7 +267,7 @@ export default class Call {
      *
      * @returns {String}
      */
-    getState() {
+    getState(): CallState {
         return this._state;
     }
 
@@ -222,23 +276,23 @@ export default class Call {
      *
      * @returns {String}
      */
-    getStateText() {
+    getStateText(): string {
         return this._stateText;
     }
 
-    isHeld() {
+    isHeld(): boolean {
         return this._held;
     }
 
-    isMuted() {
+    isMuted(): boolean {
         return this._muted;
     }
 
-    isSpeaker() {
+    isSpeaker(): boolean {
         return this._speaker;
     }
 
-    isTerminated() {
+    isTerminated(): boolean {
         return this._state === 'PJSIP_INV_STATE_DISCONNECTED';
     }
 
@@ -246,7 +300,7 @@ export default class Call {
      * Flag if remote was SDP offerer
      * @returns {boolean}
      */
-    getRemoteOfferer() {
+    getRemoteOfferer(): number {
         // TODO Verify whether boolean value
         return this._remoteOfferer;
     }
@@ -255,7 +309,7 @@ export default class Call {
      * Number of audio streams offered by remote.
      * @returns {int}
      */
-    getRemoteAudioCount() {
+    getRemoteAudioCount(): number {
         return this._remoteAudioCount;
     }
 
@@ -263,7 +317,7 @@ export default class Call {
      * Number of video streams offered by remote.
      * @returns {int}
      */
-    getRemoteVideoCount() {
+    getRemoteVideoCount(): number {
         return this._remoteVideoCount;
     }
 
@@ -271,7 +325,7 @@ export default class Call {
      * Number of simultaneous active audio streams for this call. If zero - audio is disabled in this call.
      * @returns {int}
      */
-    getAudioCount() {
+    getAudioCount(): number {
         return this._audioCount;
     }
 
@@ -279,7 +333,7 @@ export default class Call {
      * Number of simultaneous active video streams for this call. If zero - video is disabled in this call.
      * @returns {*}
      */
-    getVideoCount() {
+    getVideoCount(): number {
         return this._videoCount;
     }
 
@@ -346,7 +400,7 @@ export default class Call {
      *
      * @returns {string}
      */
-    getLastStatusCode() {
+    getLastStatusCode(): string {
         return this._lastStatusCode;
     }
 
@@ -355,15 +409,15 @@ export default class Call {
      *
      * @returns {string}
      */
-    getLastReason() {
+    getLastReason(): string {
         return this._lastReason;
     }
 
-    getMedia() {
+    getMedia(): string {
         return this._media;
     }
 
-    getProvisionalMedia() {
+    getProvisionalMedia(): string {
         return this._provisionalMedia;
     }
 
@@ -373,7 +427,7 @@ export default class Call {
      * @public
      * @returns {string}
      */
-    _formatTime(seconds) {
+    _formatTime(seconds: number): string {
         if (isNaN(seconds) || seconds < 0) {
             return "00:00";
         }

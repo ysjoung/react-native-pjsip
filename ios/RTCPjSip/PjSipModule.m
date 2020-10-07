@@ -37,7 +37,10 @@ RCT_EXPORT_METHOD(start: (NSDictionary *) config callback: (RCTResponseSenderBlo
 }
 
 // Stub method
-RCT_EXPORT_METHOD(stop: callback: (RCTResponseSenderBlock) callback) {
+RCT_EXPORT_METHOD(stop: (RCTResponseSenderBlock) callback) {
+    // [PjSipEndpoint instance].bridge = self.bridge;
+
+    // [[PjSipEndpoint instance] stop: config];
     callback(@[@TRUE]);
 }
 
@@ -60,7 +63,7 @@ RCT_EXPORT_METHOD(deleteAccount: (int) accountId callback:(RCTResponseSenderBloc
 
 RCT_EXPORT_METHOD(getAccount: (int) accountId callback:(RCTResponseSenderBlock) callback) {
     PjSipAccount *account = [[PjSipEndpoint instance] findAccount:accountId];
-    callback(@[@TRUE], [account toJsonDictionary]);
+    callback(@[@TRUE, [account toJsonDictionary]]);
 }
 
 RCT_EXPORT_METHOD(getAccounts: callback: (RCTResponseSenderBlock) callback) {
@@ -255,10 +258,12 @@ RCT_EXPORT_METHOD(activateAudioSession: (RCTResponseSenderBlock) callback) {
     if (status != PJ_SUCCESS) {
         NSLog(@"Failed to active audio session");
     }
+    callback(@[@TRUE]);
 }
 
 RCT_EXPORT_METHOD(deactivateAudioSession: (RCTResponseSenderBlock) callback) {
     pjsua_set_no_snd_dev();
+    callback(@[@TRUE]);
 }
 
 #pragma mark - Settings

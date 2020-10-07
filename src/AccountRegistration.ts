@@ -3,10 +3,10 @@
  * by calling account.getRegistration().
  */
 export default class AccountRegistration {
-    _status;
-    _statusText;
-    _active;
-    _reason;
+    _status: string;
+    _statusText: string;
+    _active: boolean;
+    _reason: string;
 
     constructor({status, statusText, active, reason}) {
         this._status = status;

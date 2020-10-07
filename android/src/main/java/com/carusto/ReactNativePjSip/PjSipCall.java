@@ -46,9 +46,8 @@ public class PjSipCall extends Call {
 
     public void hold() throws Exception {
         CallInfo info = getInfo();
-        boolean isIncoming = info.getStateText().equals("INCOMING");
     
-        if (isHeld || isIncoming) {
+        if (isHeld) {
             return;
         }
 
