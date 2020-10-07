@@ -20,13 +20,13 @@ export default class AccountRegistration {
      *
      * @returns {string|null}
      */
-    getStatus(): string;
+    getStatus(): string | null;
     /**
      * String describing the registration status.
      *
      * @returns {string|null}
      */
-    getStatusText(): string;
+    getStatusText(): string | null;
     /**
      * Flag to tell whether this account is currently registered
      * (has active registration session).
@@ -39,7 +39,7 @@ export default class AccountRegistration {
      *
      * @returns {String|null}
      */
-    getReason(): string;
+    getReason(): string | null;
     toJson(): {
         status: string;
         statusText: string;

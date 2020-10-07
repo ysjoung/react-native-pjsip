@@ -10,6 +10,14 @@ export * from './Endpoint';
 export * from './PreviewVideoView';
 export * from './RemoteVideoView';
 
+export {
+  Account,
+  Call,
+  Endpoint,
+  PreviewVideoView,
+  RemoteVideoView,
+}
+
 export default {
   Account,
   Call,

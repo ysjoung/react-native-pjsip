@@ -1,3 +1,8 @@
+import { EventEmitter } from 'events';
+import Call, { CallData } from './Call';
+import { MessageData } from './Message';
+import Account, { AccountConfiguration } from './Account';
+export declare type EndpointConfiguration = {};
 /**
  * SIP headers object, where each key is a header name and value is a header value.
  * Example:
@@ -32,16 +37,20 @@
  * @property {number} aud_cnt - Number of simultaneous active audio streams for this call. Setting this to zero will disable audio in this call.
  * @property {number} vid_cnt - Number of simultaneous active video streams for this call. Setting this to zero will disable video in this call.
  */
-export default class Endpoint {
+export default class Endpoint extends EventEmitter {
+    constructor();
     /**
      * Returns a Promise that will be resolved once PjSip module is initialized.
      * Do not call any function while library is not initialized.
      *
      * @returns {Promise}
      */
-    start(configuration: any): Promise<any>;
-    stop(): Promise<any>;
-    updateStunServers(accountId: any, stunServerList: any): Promise<any>;
+    start(configuration: EndpointConfiguration): Promise<{
+        accounts: Account[];
+        calls: Call[];
+    }>;
+    stop(): Promise<void>;
+    updateStunServers(accountId: number, stunServerList: string[]): Promise<any>;
     /**
      * @param configuration
      * @returns {Promise}
@@ -73,8 +82,8 @@ export default class Endpoint {
      * @param {Object} configuration
      * @returns {Promise}
      */
-    createAccount(configuration: any): Promise<any>;
-    replaceAccount(account: any, configuration: any): void;
+    createAccount(configuration: AccountConfiguration): Promise<Account>;
+    replaceAccount(account: Account, configuration: AccountConfiguration): void;
     /**
      * Update registration or perform unregistration.
      * If registration is configured for this account, then initial SIP REGISTER will be sent when the account is added.
@@ -97,13 +106,13 @@ export default class Endpoint {
      *
      * @returns {Promise}
      */
-    getAccounts(): Promise<any>;
+    getAccounts(): Promise<Account[]>;
     /**
      * Gets an account by id
      *
      * @returns {Promise}
      */
-    getAccount(accountId: any): Promise<any>;
+    getAccount(accountId: number): Promise<Account>;
     /**
      * Make an outgoing call to the specified URI.
      * Available call settings:
@@ -116,7 +125,7 @@ export default class Endpoint {
      * @param callSettings {PjSipCallSetttings} Outgoing call settings.
      * @param msgSettings {PjSipMsgData} Outgoing call additional information to be sent with outgoing SIP message.
      */
-    makeCall(account: Account, destination: string, callSettings: PjSipCallSetttings, msgData: any): Promise<any>;
+    makeCall(account: Account, destination: string, callSettings?: any, msgData?: any): Promise<Call>;
     /**
      * Send response to incoming INVITE request.
      *
@@ -181,7 +190,7 @@ export default class Endpoint {
      * @param destination URI of new target to be contacted. The URI may be in name address or addr-spec format.
      * @returns {Promise}
      */
-    xferCall(account: Account, call: Call, destination: any): Promise<any>;
+    xferCall(account: Account, call: Call, destination: string): Promise<any>;
     /**
      * Initiate attended call transfer.
      * This function will send REFER request to instruct remote call party to initiate new INVITE session to the URL of destCall.
@@ -201,7 +210,7 @@ export default class Endpoint {
      * @param destination URI of new target to be contacted. The URI may be in name address or addr-spec format.
      * @returns {Promise}
      */
-    redirectCall(account: Account, call: Call, destination: any): Promise<any>;
+    redirectCall(account: Account, call: Call, destination: string): Promise<any>;
     /**
      * Send DTMF digits to remote using RFC 2833 payload formats.
      *
@@ -212,50 +221,62 @@ export default class Endpoint {
     dtmfCall(call: Call, digits: string): Promise<any>;
     activateAudioSession(): Promise<any>;
     deactivateAudioSession(): Promise<any>;
-    changeOrientation(orientation: any): void;
-    changeCodecSettings(codecSettings: any): Promise<any>;
-    /**
-     * @fires Endpoint#connectivity_changed
-     * @private
-     * @param data {Object}
-     */
-    private _onConnectivityChanged;
+    changeOrientation(orientation: ('PJMEDIA_ORIENT_UNKNOWN' | 'PJMEDIA_ORIENT_ROTATE_90DEG' | 'PJMEDIA_ORIENT_ROTATE_270DEG' | 'PJMEDIA_ORIENT_ROTATE_180DEG' | 'PJMEDIA_ORIENT_NATURAL')): void;
+    changeCodecSettings(codecSettings: {
+        'opus/48000/2'?: number;
+        'G722/16000/1'?: number;
+        'G7221/16000/1'?: number;
+        'G7221/32000/1'?: number;
+        'GSM/8000/1'?: number;
+        'PCMA/8000/1'?: number;
+        'PCMU/8000/1'?: number;
+        'iLBC/8000/1'?: number;
+        'speex/8000/1'?: number;
+        'speex/16000/1'?: number;
+        'speex/32000/1'?: number;
+    }): Promise<any>;
     /**
      * @fires Endpoint#registration_changed
      * @private
      * @param data {Object}
      */
-    private _onRegistrationChanged;
+    _onRegistrationChanged(data: AccountConfiguration): void;
     /**
      * @fires Endpoint#call_received
      * @private
      * @param data {Object}
      */
-    private _onCallReceived;
+    _onCallReceived(data: CallData): void;
     /**
      * @fires Endpoint#call_changed
      * @private
      * @param data {Object}
      */
-    private _onCallChanged;
+    _onCallChanged(data: CallData): void;
     /**
      * @fires Endpoint#call_terminated
      * @private
      * @param data {Object}
      */
-    private _onCallTerminated;
+    _onCallTerminated(data: CallData): void;
     /**
      * @fires Endpoint#call_screen_locked
      * @private
      * @param lock bool
      */
-    private _onCallScreenLocked;
+    _onCallScreenLocked(lock: boolean): void;
     /**
      * @fires Endpoint#message_received
      * @private
      * @param data {Object}
      */
-    private _onMessageReceived;
+    _onMessageReceived(data: MessageData): void;
+    /**
+     * @fires Endpoint#connectivity_changed
+     * @private
+     * @param available bool
+     */
+    _onConnectivityChanged(available: boolean): void;
     /**
      * Normalize Destination URI
      *
@@ -264,64 +285,5 @@ export default class Endpoint {
      * @returns {string}
      * @private
      */
-    private _normalize;
+    _normalize(account: Account, destination: string): string;
 }
-/**
- * SIP headers object, where each key is a header name and value is a header value.
- * Example:
- * {
- *    "X-Custom-Header": "Test Header Value",
- *    "X-Custom-ID": "Awesome Header"
- * }
- */
-export type PjSipHdrList = any;
-/**
- * An additional information to be sent with outgoing SIP message.
- * It can (optionally) be specified for example
- * with #Endpoint.makeCall(), #Endpoint.answerCall(), #Endpoint.hangupCall(),
- * #Endpoint.holdCall() and many more.
- */
-export type PjSipMsgData = {
-    /**
-     * - Indicates whether the Courage component is present.
-     */
-    target_uri: string;
-    /**
-     * - Additional message headers as linked list.
-     */
-    hdr_list: any;
-    /**
-     * - MIME type of optional message body.
-     */
-    content_type: string;
-    /**
-     * - MIME type of optional message body.
-     */
-    msg_body: string;
-};
-/**
- * An additional information to be sent with outgoing SIP message.
- * It can (optionally) be specified for example
- * with #Endpoint.makeCall(), #Endpoint.answerCall(), #Endpoint.hangupCall(),
- * #Endpoint.holdCall() and many more.
- */
-export type PjSipCallSetttings = {
-    /**
-     * - Bitmask of #pjsua_call_flag constants.
-     */
-    flag: number;
-    /**
-     * - This flag controls what methods to request keyframe are allowed on the call.
-     */
-    req_keyframe_method: number;
-    /**
-     * - Number of simultaneous active audio streams for this call. Setting this to zero will disable audio in this call.
-     */
-    aud_cnt: number;
-    /**
-     * - Number of simultaneous active video streams for this call. Setting this to zero will disable video in this call.
-     */
-    vid_cnt: number;
-};
-import Account from "./Account";
-import Call from "./Call";

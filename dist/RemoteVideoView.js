@@ -7,6 +7,6 @@ const RemoteVideoView = {
         objectFit: PropTypes.oneOf(['contain', 'cover'])
     },
 };
-const View = requireNativeComponent('PjSipRemoteVideoView', null);
+const View = requireNativeComponent('PjSipRemoteVideoView');
 export default View;
 //# sourceMappingURL=RemoteVideoView.js.map

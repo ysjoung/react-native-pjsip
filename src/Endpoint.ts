@@ -1,9 +1,13 @@
 import React, {DeviceEventEmitter, NativeModules} from 'react-native';
 import {EventEmitter} from 'events'
 
-import Call from './Call'
-import Message from './Message'
-import Account from './Account'
+import Call, { CallData } from './Call'
+import Message, { MessageData } from './Message'
+import Account, { AccountConfiguration } from './Account'
+
+export type EndpointConfiguration = {
+
+}
 
 /**
  * SIP headers object, where each key is a header name and value is a header value.
@@ -42,8 +46,6 @@ import Account from './Account'
  * @property {number} vid_cnt - Number of simultaneous active video streams for this call. Setting this to zero will disable video in this call.
  */
 
-
-
 export default class Endpoint extends EventEmitter {
 
     constructor() {
@@ -67,7 +69,10 @@ export default class Endpoint extends EventEmitter {
      *
      * @returns {Promise}
      */
-    start(configuration) {
+    start(configuration: EndpointConfiguration): Promise<{
+        accounts: Account[],
+        calls: Call[],
+    }> {
         return new Promise(function(resolve, reject) {
             NativeModules.PjSipModule.start(configuration, (successful, data) => {
                 if (successful) {
@@ -106,16 +111,16 @@ export default class Endpoint extends EventEmitter {
         });
     }
 
-    stop() {
+    stop(): Promise<void> {
         return new Promise(function(resolve, reject) {
             NativeModules.PjSipModule.stop((successful, data) => {
-                resolve({});
+                resolve(data);
             });
             resolve();
         });
     }
 
-    updateStunServers(accountId, stunServerList) {
+    updateStunServers(accountId: number, stunServerList: string[]): Promise<any> {
         return new Promise(function(resolve, reject) {
             NativeModules.PjSipModule.updateStunServers(accountId, stunServerList, (successful, data) => {
                 if (successful) {
@@ -131,7 +136,7 @@ export default class Endpoint extends EventEmitter {
      * @param configuration
      * @returns {Promise}
      */
-    changeNetworkConfiguration(configuration) {
+    changeNetworkConfiguration(configuration: any): Promise<any> {
         return new Promise(function(resolve, reject) {
             NativeModules.PjSipModule.changeNetworkConfiguration(configuration, (successful, data) => {
                 if (successful) {
@@ -147,7 +152,7 @@ export default class Endpoint extends EventEmitter {
      * @param configuration
      * @returns {Promise}
      */
-    changeServiceConfiguration(configuration) {
+    changeServiceConfiguration(configuration: any): Promise<any> {
         return new Promise(function(resolve, reject) {
             NativeModules.PjSipModule.changeServiceConfiguration(configuration, (successful, data) => {
                 if (successful) {
@@ -180,7 +185,7 @@ export default class Endpoint extends EventEmitter {
      * @param {Object} configuration
      * @returns {Promise}
      */
-    createAccount(configuration) {
+    createAccount(configuration: AccountConfiguration): Promise<Account> {
         return new Promise(function(resolve, reject) {
             NativeModules.PjSipModule.createAccount(configuration, (successful, data) => {
                 if (successful) {
@@ -192,7 +197,7 @@ export default class Endpoint extends EventEmitter {
         });
     }
 
-    replaceAccount(account, configuration) {
+    replaceAccount(account: Account, configuration: AccountConfiguration): void {
         throw new Error("Not implemented");
     }
 
@@ -205,7 +210,7 @@ export default class Endpoint extends EventEmitter {
      * @param bool renew If renew argument is zero, this will start unregistration process.
      * @returns {Promise}
      */
-    registerAccount(account, renew = true) {
+    registerAccount(account: Account, renew = true): Promise<any> {
         return new Promise(function(resolve, reject) {
             NativeModules.PjSipModule.registerAccount(account.getId(), renew, (successful, data) => {
                 if (successful) {
@@ -223,7 +228,7 @@ export default class Endpoint extends EventEmitter {
      * @param {Account} account
      * @returns {Promise}
      */
-    deleteAccount(account) {
+    deleteAccount(account: Account): Promise<any> {
         return new Promise(function(resolve, reject) {
             NativeModules.PjSipModule.deleteAccount(account.getId(), (successful, data) => {
                 if (successful) {
@@ -240,7 +245,7 @@ export default class Endpoint extends EventEmitter {
      *
      * @returns {Promise}
      */
-    getAccounts() {
+    getAccounts(): Promise<Account[]> {
         return new Promise(function(resolve, reject) {
             NativeModules.PjSipModule.getAccounts((successful, data) => {
                 if (successful) {
@@ -263,7 +268,7 @@ export default class Endpoint extends EventEmitter {
      *
      * @returns {Promise}
      */
-    getAccount(accountId) {
+    getAccount(accountId: number): Promise<Account> {
         return new Promise(function(resolve, reject) {
             NativeModules.PjSipModule.getAccount(accountId, (successful, data) => {
                 if (successful) {
@@ -287,7 +292,7 @@ export default class Endpoint extends EventEmitter {
      * @param callSettings {PjSipCallSetttings} Outgoing call settings.
      * @param msgSettings {PjSipMsgData} Outgoing call additional information to be sent with outgoing SIP message.
      */
-    makeCall(account, destination, callSettings, msgData) {
+    makeCall(account: Account, destination: string, callSettings?: any, msgData?: any): Promise<Call> {
         destination = this._normalize(account, destination);
 
         return new Promise(function(resolve, reject) {
@@ -307,7 +312,7 @@ export default class Endpoint extends EventEmitter {
      * @param call {Call} Call instance
      * @returns {Promise}
      */
-    answerCall(call) {
+    answerCall(call: Call): Promise<any> {
         return new Promise((resolve, reject) => {
             NativeModules.PjSipModule.answerCall(call.getId(), (successful, data) => {
                 if (successful) {
@@ -325,7 +330,7 @@ export default class Endpoint extends EventEmitter {
      * @param call {Call} Call instance
      * @returns {Promise}
      */
-    hangupCall(call) {
+    hangupCall(call: Call): Promise<any> {
         // TODO: Add possibility to pass code and reason for hangup.
         return new Promise((resolve, reject) => {
             NativeModules.PjSipModule.hangupCall(call.getId(), (successful, data) => {
@@ -344,7 +349,7 @@ export default class Endpoint extends EventEmitter {
      * @param call {Call} Call instance
      * @returns {Promise}
      */
-    declineCall(call) {
+    declineCall(call: Call): Promise<any> {
         return new Promise((resolve, reject) => {
             NativeModules.PjSipModule.declineCall(call.getId(), (successful, data) => {
                 if (successful) {
@@ -362,7 +367,7 @@ export default class Endpoint extends EventEmitter {
      * @param call {Call} Call instance
      * @returns {Promise}
      */
-    holdCall(call) {
+    holdCall(call: Call): Promise<any> {
         return new Promise((resolve, reject) => {
             NativeModules.PjSipModule.holdCall(call.getId(), (successful, data) => {
                 if (successful) {
@@ -380,7 +385,7 @@ export default class Endpoint extends EventEmitter {
      * @param call {Call} Call instance
      * @returns {Promise}
      */
-    unholdCall(call) {
+    unholdCall(call: Call): Promise<any> {
         return new Promise((resolve, reject) => {
             NativeModules.PjSipModule.unholdCall(call.getId(), (successful, data) => {
                 if (successful) {
@@ -396,7 +401,7 @@ export default class Endpoint extends EventEmitter {
      * @param call {Call} Call instance
      * @returns {Promise}
      */
-    muteCall(call) {
+    muteCall(call: Call): Promise<any> {
         return new Promise((resolve, reject) => {
             NativeModules.PjSipModule.muteCall(call.getId(), (successful, data) => {
                 if (successful) {
@@ -412,7 +417,7 @@ export default class Endpoint extends EventEmitter {
      * @param call {Call} Call instance
      * @returns {Promise}
      */
-    unMuteCall(call) {
+    unMuteCall(call: Call): Promise<any> {
         return new Promise((resolve, reject) => {
             NativeModules.PjSipModule.unMuteCall(call.getId(), (successful, data) => {
                 if (successful) {
@@ -428,7 +433,7 @@ export default class Endpoint extends EventEmitter {
      * @param call {Call} Call instance
      * @returns {Promise}
      */
-    useSpeaker(call) {
+    useSpeaker(call: Call): Promise<any> {
         return new Promise((resolve, reject) => {
             NativeModules.PjSipModule.useSpeaker(call.getId(), (successful, data) => {
                 if (successful) {
@@ -444,7 +449,7 @@ export default class Endpoint extends EventEmitter {
      * @param call {Call} Call instance
      * @returns {Promise}
      */
-    useEarpiece(call) {
+    useEarpiece(call: Call): Promise<any> {
         return new Promise((resolve, reject) => {
             NativeModules.PjSipModule.useEarpiece(call.getId(), (successful, data) => {
                 if (successful) {
@@ -465,7 +470,7 @@ export default class Endpoint extends EventEmitter {
      * @param destination URI of new target to be contacted. The URI may be in name address or addr-spec format.
      * @returns {Promise}
      */
-    xferCall(account, call, destination) {
+    xferCall(account: Account, call: Call, destination: string): Promise<any> {
         destination = this._normalize(account, destination);
 
         return new Promise((resolve, reject) => {
@@ -488,7 +493,7 @@ export default class Endpoint extends EventEmitter {
      * @param destCall {Call} The call to be transferred.
      * @returns {Promise}
      */
-    xferReplacesCall(call, destCall) {
+    xferReplacesCall(call: Call, destCall: Call): Promise<any> {
         return new Promise((resolve, reject) => {
             NativeModules.PjSipModule.xferReplacesCall(call.getId(), destCall.getId(), (successful, data) => {
                 if (successful) {
@@ -509,7 +514,7 @@ export default class Endpoint extends EventEmitter {
      * @param destination URI of new target to be contacted. The URI may be in name address or addr-spec format.
      * @returns {Promise}
      */
-    redirectCall(account, call, destination) {
+    redirectCall(account: Account, call: Call, destination: string): Promise<any> {
         destination = this._normalize(account, destination);
 
         return new Promise((resolve, reject) => {
@@ -530,7 +535,7 @@ export default class Endpoint extends EventEmitter {
      * @param digits {String} DTMF string digits to be sent as described on RFC 2833 section 3.10.
      * @returns {Promise}
      */
-    dtmfCall(call, digits) {
+    dtmfCall(call: Call, digits: string): Promise<any> {
         return new Promise((resolve, reject) => {
             NativeModules.PjSipModule.dtmfCall(call.getId(), digits, (successful, data) => {
                 if (successful) {
@@ -542,7 +547,7 @@ export default class Endpoint extends EventEmitter {
         });
     }
 
-    activateAudioSession() {
+    activateAudioSession(): Promise<any> {
         return new Promise((resolve, reject) => {
             NativeModules.PjSipModule.activateAudioSession((successful, data) => {
                 if (successful) {
@@ -554,7 +559,7 @@ export default class Endpoint extends EventEmitter {
         });
     }
 
-    deactivateAudioSession() {
+    deactivateAudioSession(): Promise<any> {
         return new Promise((resolve, reject) => {
             NativeModules.PjSipModule.deactivateAudioSession((successful, data) => {
                 if (successful) {
@@ -566,7 +571,13 @@ export default class Endpoint extends EventEmitter {
         });
     }
 
-    changeOrientation(orientation) {
+    changeOrientation(orientation: (
+        'PJMEDIA_ORIENT_UNKNOWN'
+        | 'PJMEDIA_ORIENT_ROTATE_90DEG'
+        | 'PJMEDIA_ORIENT_ROTATE_270DEG'
+        | 'PJMEDIA_ORIENT_ROTATE_180DEG'
+        | 'PJMEDIA_ORIENT_NATURAL'
+    )): void {
       const orientations = [
         'PJMEDIA_ORIENT_UNKNOWN',
         'PJMEDIA_ORIENT_ROTATE_90DEG',
@@ -582,7 +593,19 @@ export default class Endpoint extends EventEmitter {
       NativeModules.PjSipModule.changeOrientation(orientation)
     }
 
-    changeCodecSettings(codecSettings) {
+    changeCodecSettings(codecSettings: {
+        'opus/48000/2'?: number,
+        'G722/16000/1'?: number,
+        'G7221/16000/1'?: number,
+        'G7221/32000/1'?: number,
+        'GSM/8000/1'?: number,
+        'PCMA/8000/1'?: number,
+        'PCMU/8000/1'?: number,
+        'iLBC/8000/1'?: number,
+        'speex/8000/1'?: number,
+        'speex/16000/1'?: number,
+        'speex/32000/1'?: number,
+    }): Promise<any> {
         return new Promise(function(resolve, reject) {
         NativeModules.PjSipModule.changeCodecSettings(codecSettings, (successful, data) => {
                 if (successful) {
@@ -595,26 +618,11 @@ export default class Endpoint extends EventEmitter {
     }
 
     /**
-     * @fires Endpoint#connectivity_changed
-     * @private
-     * @param data {Object}
-     */
-    _onConnectivityChanged(data) {
-        /**
-         * Fires when registration status has changed.
-         *
-         * @event Endpoint#connectivity_changed
-         * @property {Account} account
-         */
-        this.emit("connectivity_changed", new Account(data));
-    }
-
-    /**
      * @fires Endpoint#registration_changed
      * @private
      * @param data {Object}
      */
-    _onRegistrationChanged(data) {
+    _onRegistrationChanged(data: AccountConfiguration): void {
         /**
          * Fires when registration status has changed.
          *
@@ -629,7 +637,7 @@ export default class Endpoint extends EventEmitter {
      * @private
      * @param data {Object}
      */
-    _onCallReceived(data) {
+    _onCallReceived(data: CallData): void {
         /**
          * TODO
          *
@@ -644,7 +652,7 @@ export default class Endpoint extends EventEmitter {
      * @private
      * @param data {Object}
      */
-    _onCallChanged(data) {
+    _onCallChanged(data: CallData): void {
         /**
          * TODO
          *
@@ -659,7 +667,7 @@ export default class Endpoint extends EventEmitter {
      * @private
      * @param data {Object}
      */
-    _onCallTerminated(data) {
+    _onCallTerminated(data: CallData): void {
         /**
          * TODO
          *
@@ -674,7 +682,7 @@ export default class Endpoint extends EventEmitter {
      * @private
      * @param lock bool
      */
-    _onCallScreenLocked(lock) {
+    _onCallScreenLocked(lock: boolean): void {
         /**
          * TODO
          *
@@ -689,7 +697,7 @@ export default class Endpoint extends EventEmitter {
      * @private
      * @param data {Object}
      */
-    _onMessageReceived(data) {
+    _onMessageReceived(data: MessageData): void {
         /**
          * TODO
          *
@@ -704,7 +712,7 @@ export default class Endpoint extends EventEmitter {
      * @private
      * @param available bool
      */
-    _onConnectivityChanged(available) {
+    _onConnectivityChanged(available: boolean): void {
         /**
          * @event Endpoint#connectivity_changed
          * @property bool available True if connectivity matches current Network settings, otherwise false.
@@ -720,7 +728,7 @@ export default class Endpoint extends EventEmitter {
      * @returns {string}
      * @private
      */
-    _normalize(account, destination) {
+    _normalize(account: Account, destination: string): string {
         if (!destination.startsWith("sip:")) {
             let realm = account.getRegServer();
 

@@ -1,28 +1,29 @@
+export declare type MessageData = {
+    accountId: number;
+    contactUri: string;
+    fromUri: string;
+    toUri: string;
+    body: string;
+    contentType: string;
+};
 /**
  * This class describes the information and current status of a call.
  */
 export default class Message {
-    constructor({ accountId, contactUri, fromUri, toUri, body, contentType }: {
-        accountId: any;
-        contactUri: any;
-        fromUri: any;
-        toUri: any;
-        body: any;
-        contentType: any;
-    });
-    _accountId: any;
-    _contactUri: any;
-    _fromUri: any;
-    _fromName: any;
-    _fromNumber: any;
-    _toUri: any;
-    _body: any;
-    _contentType: any;
+    _accountId: number;
+    _contactUri: string;
+    _fromUri: string;
+    _fromName: string;
+    _fromNumber: string;
+    _toUri: string;
+    _body: string;
+    _contentType: string;
+    constructor({ accountId, contactUri, fromUri, toUri, body, contentType }: MessageData);
     /**
      * The account ID where this message belongs.
      * @returns {int}
      */
-    getAccountId(): any;
+    getAccountId(): number;
     /**
      * The Contact URI of the sender, if present.
      * @returns {String}

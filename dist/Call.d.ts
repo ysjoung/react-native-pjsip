@@ -7,6 +7,33 @@ export declare enum CallState {
     PJSIP_INV_STATE_CONFIRMED = "PJSIP_INV_STATE_CONFIRMED",
     PJSIP_INV_STATE_DISCONNECTED = "PJSIP_INV_STATE_DISCONNECTED"
 }
+export declare type CallData = {
+    id: number;
+    callId: string;
+    accountId: number;
+    localContact: string;
+    localUri: string;
+    remoteContact: string;
+    remoteUri: string;
+    state: CallState;
+    stateText: string;
+    held: boolean;
+    muted: boolean;
+    speaker: boolean;
+    connectDuration: number;
+    totalDuration: number;
+    remoteOfferer: number;
+    remoteAudioCount: number;
+    remoteVideoCount: number;
+    remoteNumber: string;
+    remoteName: string;
+    audioCount: number;
+    videoCount: number;
+    lastStatusCode: string;
+    lastReason: string;
+    media: string;
+    provisionalMedia: string;
+};
 /**
  * This class describes the information and current status of a call.
  */
@@ -37,31 +64,7 @@ declare class Call {
     _media: string;
     _provisionalMedia: string;
     _constructionTime: number;
-    constructor({ id, callId, accountId, localContact, localUri, remoteContact, remoteUri, state, stateText, held, muted, speaker, connectDuration, totalDuration, remoteOfferer, remoteAudioCount, remoteVideoCount, audioCount, videoCount, lastStatusCode, lastReason, media, provisionalMedia, }: {
-        id: any;
-        callId: any;
-        accountId: any;
-        localContact: any;
-        localUri: any;
-        remoteContact: any;
-        remoteUri: any;
-        state: any;
-        stateText: any;
-        held: any;
-        muted: any;
-        speaker: any;
-        connectDuration: any;
-        totalDuration: any;
-        remoteOfferer: any;
-        remoteAudioCount: any;
-        remoteVideoCount: any;
-        audioCount: any;
-        videoCount: any;
-        lastStatusCode: any;
-        lastReason: any;
-        media: any;
-        provisionalMedia: any;
-    });
+    constructor({ id, callId, accountId, localContact, localUri, remoteContact, remoteUri, state, stateText, held, muted, speaker, connectDuration, totalDuration, remoteOfferer, remoteAudioCount, remoteVideoCount, audioCount, videoCount, lastStatusCode, lastReason, media, provisionalMedia, }: CallData);
     /**
      * Call identification.
      * @returns {int}

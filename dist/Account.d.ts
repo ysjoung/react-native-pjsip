@@ -1,15 +1,32 @@
+import AccountRegistration from './AccountRegistration';
+export declare type AccountConfiguration = {
+    id: number;
+    uri: string;
+    name: string;
+    username: string;
+    domain: string | null;
+    password: string;
+    proxy: string;
+    transport: string;
+    contactParams: string;
+    contactUriParams: string;
+    regServer: string;
+    regTimeout: string;
+    regContactParams: string;
+    regHeaders: Object;
+};
 /**
  * This describes account configuration and registration status
  */
 export default class Account {
-    constructor(data: any);
-    _data: any;
+    _data: AccountConfiguration;
     _registration: AccountRegistration;
+    constructor(data: any);
     /**
      * The account ID.
      * @returns {int}
      */
-    getId(): any;
+    getId(): number;
     /**
      * This is the URL to be put in the request URI for the registration, and will look something like "sip:serviceprovider".
      * @returns {String}
@@ -29,7 +46,7 @@ export default class Account {
      * Domain specified in Endpoint.createAccount().
      * @returns {int|null}
      */
-    getDomain(): any;
+    getDomain(): string | null;
     /**
      * Password specified in Endpoint.createAccount().
      * @returns {String}
@@ -74,11 +91,10 @@ export default class Account {
     /**
      * @returns {Object}
      */
-    getRegHeaders(): any;
+    getRegHeaders(): Object;
     /**
      * Account registration status.
      * @returns {AccountRegistration}
      */
     getRegistration(): AccountRegistration;
 }
-import AccountRegistration from "./AccountRegistration";

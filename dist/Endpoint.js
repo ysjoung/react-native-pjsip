@@ -90,7 +90,7 @@ export default class Endpoint extends EventEmitter {
     stop() {
         return new Promise(function (resolve, reject) {
             NativeModules.PjSipModule.stop((successful, data) => {
-                resolve({});
+                resolve(data);
             });
             resolve();
         });
@@ -564,20 +564,6 @@ export default class Endpoint extends EventEmitter {
                 }
             });
         });
-    }
-    /**
-     * @fires Endpoint#connectivity_changed
-     * @private
-     * @param data {Object}
-     */
-    _onConnectivityChanged(data) {
-        /**
-         * Fires when registration status has changed.
-         *
-         * @event Endpoint#connectivity_changed
-         * @property {Account} account
-         */
-        this.emit("connectivity_changed", new Account(data));
     }
     /**
      * @fires Endpoint#registration_changed

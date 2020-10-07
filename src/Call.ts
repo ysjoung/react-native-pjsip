@@ -8,6 +8,34 @@ export enum CallState {
     PJSIP_INV_STATE_DISCONNECTED = 'PJSIP_INV_STATE_DISCONNECTED',
 };
 
+export type CallData = {
+    id: number
+    callId: string
+    accountId: number
+    localContact: string
+    localUri: string
+    remoteContact: string
+    remoteUri: string
+    state: CallState
+    stateText: string
+    held: boolean
+    muted: boolean
+    speaker: boolean
+    connectDuration: number
+    totalDuration: number
+    remoteOfferer: number
+    remoteAudioCount: number
+    remoteVideoCount: number
+    remoteNumber: string
+    remoteName: string
+    audioCount: number
+    videoCount: number
+    lastStatusCode: string
+    lastReason: string
+    media: string
+    provisionalMedia: string
+}
+
 /**
  * This class describes the information and current status of a call.
  */
@@ -64,7 +92,7 @@ class Call {
             lastReason,
             media,
             provisionalMedia,
-        }) {
+        }: CallData) {
         let remoteNumber = null;
         let remoteName = null;
 

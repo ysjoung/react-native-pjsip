@@ -6,7 +6,8 @@
     "generate-docs": "node_modules/.bin/jsdoc --configure .jsdoc.json --verbose"
   },
   "main": "./dist/index.js",
-  "types": "./index.d.ts",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "author": {
     "name": "Vadim Ruban",
     "email": "vadim.ruban@carusto.com"
@@ -21,6 +22,8 @@
   "devDependencies": {
     "@babel/core": "7.7.4",
     "@babel/preset-typescript": "7.7.4",
+    "@types/events": "3.0.0",
+    "@types/react-native": "0.63.25",
     "babel-eslint": "^10.0.0",
     "eslint": "^5.6.0",
     "eslint-config-airbnb": "^17.1.0",

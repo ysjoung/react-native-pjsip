@@ -7,6 +7,6 @@ const PreviewVideoView = {
         objectFit: PropTypes.oneOf(['contain', 'cover'])
     },
 };
-const View = requireNativeComponent('PjSipPreviewVideoView', null);
+const View = requireNativeComponent('PjSipPreviewVideoView');
 export default View;
 //# sourceMappingURL=PreviewVideoView.js.map
