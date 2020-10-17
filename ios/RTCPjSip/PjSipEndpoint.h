@@ -19,6 +19,7 @@
 +(instancetype)instance;
 
 -(NSDictionary *)start: (NSDictionary *) config;
+-(NSDictionary *)stop: (NSDictionary *) config;
 
 -(void) updateStunServers: (int) accountId stunServerList:(NSArray *)stunServerList;
 

@@ -45,6 +45,8 @@ public class PjSipCall extends Call {
     }
 
     public void hold() throws Exception {
+        CallInfo info = getInfo();
+    
         if (isHeld) {
             return;
         }
