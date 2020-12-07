@@ -207,6 +207,7 @@
 }
 
 - (PjSipAccount *) findAccount: (int) accountId {
+    NSLog([NSString stringWithFormat: @"FINDING ACCOUNT WITH ID: %d", accountId]);
     return self.accounts[@(accountId)];
 }
 

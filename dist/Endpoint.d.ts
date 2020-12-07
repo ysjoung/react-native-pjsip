@@ -172,15 +172,14 @@ export default class Endpoint extends EventEmitter {
      */
     unMuteCall(call: Call): Promise<any>;
     /**
-     * @param call {Call} Call instance
      * @returns {Promise}
      */
-    useSpeaker(call: Call): Promise<any>;
+    useSpeaker(): Promise<any>;
     /**
      * @param call {Call} Call instance
      * @returns {Promise}
      */
-    useEarpiece(call: Call): Promise<any>;
+    useEarpiece(): Promise<any>;
     /**
      * Initiate call transfer to the specified address.
      * This function will send REFER request to instruct remote call party to initiate a new INVITE session to the specified destination/target.
