@@ -430,12 +430,11 @@ export default class Endpoint extends EventEmitter {
     }
 
     /**
-     * @param call {Call} Call instance
      * @returns {Promise}
      */
-    useSpeaker(call: Call): Promise<any> {
+    useSpeaker(): Promise<any> {
         return new Promise((resolve, reject) => {
-            NativeModules.PjSipModule.useSpeaker(call.getId(), (successful, data) => {
+            NativeModules.PjSipModule.useSpeaker((successful, data) => {
                 if (successful) {
                     resolve(data);
                 } else {
@@ -449,9 +448,9 @@ export default class Endpoint extends EventEmitter {
      * @param call {Call} Call instance
      * @returns {Promise}
      */
-    useEarpiece(call: Call): Promise<any> {
+    useEarpiece(): Promise<any> {
         return new Promise((resolve, reject) => {
-            NativeModules.PjSipModule.useEarpiece(call.getId(), (successful, data) => {
+            NativeModules.PjSipModule.useEarpiece((successful, data) => {
                 if (successful) {
                     resolve(data);
                 } else {

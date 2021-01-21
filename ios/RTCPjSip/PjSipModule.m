@@ -62,8 +62,13 @@ RCT_EXPORT_METHOD(deleteAccount: (int) accountId callback:(RCTResponseSenderBloc
 }
 
 RCT_EXPORT_METHOD(getAccount: (int) accountId callback:(RCTResponseSenderBlock) callback) {
-    PjSipAccount *account = [[PjSipEndpoint instance] findAccount:accountId];
-    callback(@[@TRUE, [account toJsonDictionary]]);
+    @try {
+        PjSipAccount *account = [[PjSipEndpoint instance] findAccount:accountId];
+        callback(@[@TRUE, [account toJsonDictionary]]);
+    }
+    @catch (NSException * e) {
+        callback(@[@FALSE, e.reason]);
+    }
 }
 
 RCT_EXPORT_METHOD(getAccounts: callback: (RCTResponseSenderBlock) callback) {
@@ -243,11 +248,11 @@ RCT_EXPORT_METHOD(dtmfCall: (int) callId digits: (NSString *) digits callback:(R
     }
 }
 
-RCT_EXPORT_METHOD(useSpeaker: (int) callId callback:(RCTResponseSenderBlock) callback) {
+RCT_EXPORT_METHOD(useSpeaker: (RCTResponseSenderBlock) callback) {
     [[PjSipEndpoint instance] useSpeaker];
 }
 
-RCT_EXPORT_METHOD(useEarpiece: (int) callId callback:(RCTResponseSenderBlock) callback) {
+RCT_EXPORT_METHOD(useEarpiece: (RCTResponseSenderBlock) callback) {
     [[PjSipEndpoint instance] useEarpiece];
 }
 
@@ -262,8 +267,17 @@ RCT_EXPORT_METHOD(activateAudioSession: (RCTResponseSenderBlock) callback) {
 }
 
 RCT_EXPORT_METHOD(deactivateAudioSession: (RCTResponseSenderBlock) callback) {
-    pjsua_set_no_snd_dev();
-    callback(@[@TRUE]);
+    @try {
+        NSLog(@"TELEPHONY TRACE: Deactivate audio session");
+        pjsua_set_no_snd_dev();
+        NSLog(@"TELEPHONY TRACE: Before callback");
+        callback(@[@TRUE]);
+        NSLog(@"TELEPHONY TRACE: After callback");
+    }
+    @catch (NSException * e) {
+        NSLog(@"TELEPHONY TRACE: Error!");
+        callback(@[@FALSE, e.reason]);
+    }
 }
 
 #pragma mark - Settings
