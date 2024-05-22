@@ -84,7 +84,10 @@
         pjsua_media_config_default(&mediaConfig);
         mediaConfig.clock_rate = PJSUA_DEFAULT_CLOCK_RATE;
         mediaConfig.snd_clock_rate = 0;
-        
+
+                // Enable ICE
+        mediaConfig.enable_ice = PJ_TRUE;
+
         // Init the pjsua
         status = pjsua_init(&cfg, &log_cfg, &mediaConfig);
         if (status != PJ_SUCCESS) {
