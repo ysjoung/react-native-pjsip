@@ -119,6 +119,8 @@ public class PjSipService extends Service {
 
     private SharedPreferences mSharedPreferences;
 
+    private MyCallStateListener callStateListener;
+
     public PjSipBroadcastEmiter getEmitter() {
         return mEmitter;
     }
@@ -268,7 +270,13 @@ public class PjSipService extends Service {
                 mWifiLock.setReferenceCounted(false);
                 mTelephonyManager = (TelephonyManager) getApplicationContext()
                         .getSystemService(Context.TELEPHONY_SERVICE);
-                mGSMIdle = mTelephonyManager.getCallState() == TelephonyManager.CALL_STATE_IDLE;
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    exec = Executors.newSingleThreadExecutor();
+                    callStateListener = new MyCallStateListener();
+                    mTelephonyManager.registerTelephonyCallback(exec, callStateListener);
+                }
+//                mGSMIdle = mTelephonyManager.getCallState() == TelephonyManager.CALL_STATE_IDLE;
 
                 IntentFilter phoneStateFilter = new IntentFilter(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
                 registerReceiver(mPhoneStateChangedReceiver, phoneStateFilter);
@@ -332,6 +340,13 @@ public class PjSipService extends Service {
         mInitialized = false;
 
         super.onDestroy();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && callStateListener != null) {
+            mTelephonyManager.unregisterTelephonyCallback(callStateListener);
+            if (exec instanceof ExecutorService) {
+                ((ExecutorService) exec).shutdown();
+            }
+        }
     }
 
     private void job(Runnable job) {
