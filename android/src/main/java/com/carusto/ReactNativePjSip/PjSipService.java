@@ -20,8 +20,11 @@ import android.os.Looper;
 import android.os.PowerManager;
 import android.os.Process;
 import android.preference.PreferenceManager;
+
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import android.os.Bundle;
+import android.telephony.TelephonyCallback;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -62,6 +65,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class PjSipService extends Service {
 
@@ -119,7 +126,9 @@ public class PjSipService extends Service {
 
     private SharedPreferences mSharedPreferences;
 
-    private MyCallStateListener callStateListener;
+    private MyCallStateListener myCallStateListener;
+
+    private Executor exec;
 
     public PjSipBroadcastEmiter getEmitter() {
         return mEmitter;
@@ -273,8 +282,8 @@ public class PjSipService extends Service {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     exec = Executors.newSingleThreadExecutor();
-                    callStateListener = new MyCallStateListener();
-                    mTelephonyManager.registerTelephonyCallback(exec, callStateListener);
+                    myCallStateListener = new MyCallStateListener();
+                    mTelephonyManager.registerTelephonyCallback(exec, myCallStateListener);
                 }
 //                mGSMIdle = mTelephonyManager.getCallState() == TelephonyManager.CALL_STATE_IDLE;
 
@@ -309,7 +318,7 @@ public class PjSipService extends Service {
             return START_NOT_STICKY;
         } catch (
 
-        Exception e) {
+                Exception e) {
             Log.e(TAG, "Error in onStart", e);
             return 0;
         }
@@ -341,14 +350,25 @@ public class PjSipService extends Service {
 
         super.onDestroy();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && callStateListener != null) {
-            mTelephonyManager.unregisterTelephonyCallback(callStateListener);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && myCallStateListener != null) {
+            mTelephonyManager.unregisterTelephonyCallback(myCallStateListener);
             if (exec instanceof ExecutorService) {
                 ((ExecutorService) exec).shutdown();
             }
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.S)
+    private class MyCallStateListener extends TelephonyCallback implements TelephonyCallback.CallStateListener {
+        @Override
+        public void onCallStateChanged(int state) {
+            if (state == TelephonyManager.CALL_STATE_IDLE) {
+                mGSMIdle = true;
+            } else {
+                mGSMIdle = false;
+            }
+        }
+    }
     private void job(Runnable job) {
         mHandler.post(job);
     }
